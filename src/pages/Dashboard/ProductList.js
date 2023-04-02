@@ -1,28 +1,27 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  getProducts,
-  removeProduct,
-} from "../../features/products/productsSlice";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+
 import { toast } from "react-hot-toast";
+import {
+  useGetProductsQuery,
+  useRemoveProductMutation,
+} from "../../features/api/apiSlice";
 
 const ProductList = () => {
   const dispatch = useDispatch();
-  const { products, isLoading, deleteSuccess, isError, error } = useSelector(
-    (state) => state.products
+  const { data, isLoading, isSuccess, error, isError } = useGetProductsQuery(
+    null,
+    { refetchOnMountOrArgChange: true }
   );
 
-  useEffect(() => {
-    dispatch(getProducts());
-  }, []);
-  useEffect(() => {
-    if (!isLoading && deleteSuccess) {
-      toast.success("Successfully Loading");
-    }
-  }, [isLoading, deleteSuccess]);
+  const [removeProduct] = useRemoveProductMutation();
 
+  const products = data?.data;
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <h1>Loading</h1>;
+  }
+  if (isError) {
+    return <p>Something went wrong</p>;
   }
 
   return (
@@ -83,7 +82,7 @@ const ProductList = () => {
                   </td>
                   <td class="p-2">
                     <div class="flex justify-center">
-                      <button onClick={() => dispatch(removeProduct(_id))}>
+                      <button onClick={() => removeProduct(_id)}>
                         <svg
                           class="w-8 h-8 hover:text-blue-600 rounded-full hover:bg-gray-100 p-1"
                           fill="none"

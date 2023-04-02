@@ -6,6 +6,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { addToCart, removeFromCart } from "../features/cart/cartSlice";
 
 const ProductCard = ({ product }) => {
+  console.log(product);
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   return (

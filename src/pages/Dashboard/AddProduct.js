@@ -1,32 +1,22 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addProduct,
-  togglePostSuccess,
-} from "../../features/products/productsSlice";
+import { useAddProductMutation } from "../../features/api/apiSlice";
 import { toast } from "react-hot-toast";
 
 const AddProduct = () => {
   const { register, handleSubmit, reset } = useForm();
-  const { isLoading, postSuccess, error, isError } = useSelector(
-    (state) => state.products
-  );
-  const dispatch = useDispatch();
+  const [postProduct, { isLoading, isSuccess }] = useAddProductMutation();
 
   useEffect(() => {
     if (isLoading) {
-      toast.loading("Positing...", { id: "addProduct" });
+      toast.loading("Posting...", { id: "addProduct" });
     }
-    if (!isLoading && postSuccess) {
+    if (isSuccess) {
       toast.success("Product Added", { id: "addProduct" });
-      dispatch(togglePostSuccess());
       reset();
     }
-    if (!isLoading && isError) {
-      toast.success(error, { id: "addProduct" });
-    }
-  }, [isLoading, isError, postSuccess, error]);
+  }, [isLoading, isSuccess]);
+
   const submit = (data) => {
     const product = {
       model: data.model,
@@ -42,7 +32,7 @@ const AddProduct = () => {
       spec: [],
     };
 
-    dispatch(addProduct(product));
+    postProduct(product);
   };
 
   return (
@@ -75,7 +65,7 @@ const AddProduct = () => {
         </div>
         <div className="flex flex-col w-full max-w-xs">
           <label className="mb-2" htmlFor="price">
-            Image
+            Price
           </label>
           <input type="text" name="price" id="price" {...register("price")} />
         </div>
